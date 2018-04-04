@@ -1,5 +1,5 @@
 #!/bin/bash
-TMP_FILE="/tmp/out.txt"
+TMP_FILE="/tmp/out.html"
 OUT_FILE="github_repos_list.txt"
 ERR="\033[31m"
 OK="\033[32m"
@@ -38,7 +38,7 @@ curl -s -k -A "$USER_AGENT" "$GITHUB_DOMAIN/$GITHUB_SEARCH_PATH""$keywords_searc
 
 
 echo -e "$VRBM Determining the number of github repos found"
-no_github_repos=`cat /tmp/out.txt \
+no_github_repos=`cat $TMP_FILE \
     | grep -i "Repository Results" \
     | egrep -io "[0-9]+"`
 if [ "$no_github_repos" == "" ]; then
@@ -50,7 +50,7 @@ fi
 
 
 echo -e "$VRBM Determining the number of github pages listing repos found"
-no_of_pages=`cat /tmp/out.txt \
+no_of_pages=`cat $TMP_FILE \
     | egrep -io "\/search\?p=[0-9]+" \
     | cut -d "=" -f2 \
     | sort -n | tail -n1`
@@ -66,7 +66,7 @@ for p in `seq 1 $no_of_pages`; do
     if [ ! $p -eq 1 ]; then
         curl -s -k -A "$USER_AGENT" "$GITHUB_DOMAIN/$GITHUB_SEARCH_PATH""$keywords_search_pattern""&p=$p" -o $TMP_FILE
     fi
-    page_results=`cat /tmp/out.txt | grep -i 'a class="v-align-middle"' --color | cut -d">" -f2,3,4,5,6,7 | sed -r "s/<em>//" | sed -r "s/<\/em>//" | sed -r "s/<\/a>//"`
+    page_results=`cat $TMP_FILE | grep -i 'a class="v-align-middle"' --color | cut -d">" -f2,3,4,5,6,7 | sed -r "s/<em>//" | sed -r "s/<\/em>//" | sed -r "s/<\/a>//"`
     no_of_page_results=`echo "$page_results" | wc -l`
     echo -e "$OKM No of results found on page $p: $no_of_page_results"
     if [ ! $p -eq 1 ]; then
@@ -75,3 +75,5 @@ for p in `seq 1 $no_of_pages`; do
         echo -e "$page_results" | xargs -I {} echo -e "$GITHUB_DOMAIN/{}" > $OUT_FILE
     fi
 done
+
+rm $TMP_FILE
