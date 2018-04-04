@@ -1,4 +1,4 @@
-# GetGithubRepos
+# get_github_repos
 Gets a list of github repos by searching for the specified key words on github.com
 The results are written to a txt file by default
 
@@ -8,7 +8,7 @@ The results are written to a txt file by default
 ./get_github_repos.sh <keywords>
 ```
 
-##Arguments
+## Arguments
 
 keywords - keywords to search for 
 
